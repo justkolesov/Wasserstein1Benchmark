@@ -388,6 +388,51 @@ class Discriminator(nn.Module):
         out = self.net(x).reshape(x.shape[0],1) if self.flag_convolution == True else self.net(x).reshape(x.shape[0],3*64*64)
         return out
     
+    
+class Tiny_Discriminator(nn.Module):
+    def __init__(self, in_channels, ndf, method, flag_convolution, bound = None , power_iters = None):
+        super().__init__()
+        self.in_channels = in_channels
+        self.ndf = ndf
+        self.method = method
+        self.flag_convolution = flag_convolution
+        if flag_convolution == True:
+            if method == "sn-gan":
+                assert isinstance(power_iters, int)
+                assert power_iters > 0
+                func = lambda layer : Spectralnorm(layer, power_iters)
+            elif method == "wgan":
+                assert bound > 0
+                func = lambda layer : Clipper(layer, bound)
+            else:
+                func = lambda layer : layer
+                
+            self.net = torch.nn.Sequential(
+                func(torch.nn.Conv2d(in_channels, ndf, 4, 2, 1, bias=False )),
+                torch.nn.LeakyReLU(0.2, inplace=True),
+                # state size. (ndf) x 16 x 16
+                func(torch.nn.Conv2d( ndf, ndf * 2, 4, 2, 1, bias=False)) ,
+                #torch.nn.BatchNorm2d(ndf * 2 ),
+                torch.nn.LeakyReLU(0.2, inplace=True),
+                # state size. (ndf*2) x 8 x 8
+                func(torch.nn.Conv2d( ndf * 2, ndf * 4, 4, 2, 1, bias=False )),
+                #torch.nn.BatchNorm2d(ndf * 4 ),
+                torch.nn.LeakyReLU(0.2, inplace=True),
+                # state size. (ndf*4) x 4 x 4
+                func(torch.nn.Conv2d( ndf * 4, 1, 4, 1, 0, bias=False)))
+               
+                #torch.nn.Sigmoid() -- we remove, because ...       
+        else:  
+            self.net =  UNet(n_channels = in_channels, n_classes = in_channels ,base_factor = 24) 
+            
+    def forward(self,x):
+        assert x.shape[1] == 3*32*32
+        x = x.view(-1,3,32,32)
+        out = self.net(x).reshape(x.shape[0],1) if self.flag_convolution == True else self.net(x).reshape(x.shape[0],3*32*32)
+        return out    
+    
+    
+    
 class ResNetBlock(nn.Module):
     def __init__(self, fin, fout, fhidden=None, bn=True, res_ratio=0.1):
         super().__init__()
@@ -505,12 +550,23 @@ def freeze(model):
         p.requires_grad_(False)
     model.eval()    
 
-def load_resnet_G(cpkt_path, device='cuda'):
+def load_resnet_G(cpkt_path, shape, device='cuda'):
+     
     
-    resnet = torch.nn.Sequential(
+    if shape == 3*32*32:
+        resnet = torch.nn.Sequential(
+        ResNet_G(128, 32, nfilter=64, nfilter_max=512, res_ratio=0.1),
+        View(shape)
+        )
+        #resnet[0] = torch.nn.DataParallel(resnet[0])
+        
+    elif shape == 3*64*64:
+        resnet = torch.nn.Sequential(
         ResNet_G(128, 64, nfilter=64, nfilter_max=512, res_ratio=0.1),
-        View(64*64*3)
-    )
+        View(shape)
+        )
+        
+    
     resnet[0].load_state_dict(torch.load(cpkt_path))
     resnet = resnet.to(device)
     freeze(resnet)

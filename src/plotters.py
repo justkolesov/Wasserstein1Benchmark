@@ -4,9 +4,12 @@ from matplotlib.patches import Rectangle
 
 import torch
  
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA 
+from sklearn.manifold import Isomap, TSNE 
 from .map_benchmark import  MixToOneBenchmark
 from .utils import get_borders
+
+ 
 
 def PCA_plot_q_p_samples(benchmark, num_samples, fix, fiy, path, flag_p=True):  
     

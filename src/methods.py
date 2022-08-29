@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import functools
 import numpy as np
 import tqdm
+import time
 import ot
 
 import sys
@@ -51,8 +52,10 @@ def train_WGAN( critic, critic_optimizer,sampler_q,sampler_p,benchmark,batch_siz
     
     critic_losses = []
     cosine_accuracy = []
+    times_cos = []
     critic.train(True)
     
+    start_time = time.time()
     for epoch_i in tqdm.tqdm(range(n_iterations)):
     
         p_samples   =  sampler_p.sample(batch_size, flag_plan = False) 
@@ -67,20 +70,25 @@ def train_WGAN( critic, critic_optimizer,sampler_q,sampler_p,benchmark,batch_siz
         
         critic_losses.append(d_loss.item())
         if epoch_i % 10 == 0:
-            cosine_accuracy.append( cosine_metrics( critic ,None, benchmark, batch_size ,flag_rev = False) )   
+            cosine_accuracy.append( cosine_metrics( critic ,None, benchmark, batch_size ,flag_rev = False) ) 
+            times_cos.append(time.time() - start_time)
     # additional forward for preserving 1-Lipshitzness
     critic.forward(p_samples)
     critic.eval()
-    return critic_losses, cosine_accuracy
+    return critic_losses, cosine_accuracy, times_cos
     
 #----------------CoWGAN-----------------#
 def train_CoWGAN(critic, critic_optimizer, 
                  sampler_q, sampler_p , benchmark, batch_size, n_iterations):
     
+    
     L_1_losses = []
     L_2_losses = []
     L_3_losses = []
     cosine_accuracy = []
+    times_cos = []
+    
+    start_time = time.time()
     
     for it in tqdm.tqdm(range(n_iterations)):
         
@@ -122,8 +130,9 @@ def train_CoWGAN(critic, critic_optimizer,
     
         if it % 10 == 0:
             cosine_accuracy.append(cosine_metrics( critic ,None,benchmark, batch_size ,flag_rev = False))
+            times_cos.append(time.time() - start_time)
         
-    return {"L1":L_1_losses,"L2":L_2_losses,"L3":L_3_losses}, cosine_accuracy
+    return {"L1":L_1_losses,"L2":L_2_losses,"L3":L_3_losses}, cosine_accuracy, times_cos 
     
 #----------------3P-WGAN-----------------#
 
@@ -135,7 +144,9 @@ def train_3PWGAN(critic, mover, optimizer_critic, optimizer_mover, sampler_q, sa
 
     losses = {"critic":[],"mover":[] }
     cosine_accuracy = []
+    times_cos = []
  
+    start_time = time.time()
     for itr in tqdm.tqdm(range(n_iterations)):
         if reverse_flag == False: 
             q_sample = sampler_q.sample(batch_size) 
@@ -171,16 +182,22 @@ def train_3PWGAN(critic, mover, optimizer_critic, optimizer_mover, sampler_q, sa
             if reverse_flag == False:
                 cosine_accuracy.append(cosine_metrics( critic ,None,benchmark, batch_size ,flag_rev = False
                               ))
+                times_cos.append(time.time() - start_time)
             else:
                 cosine_accuracy.append(cosine_metrics(None ,mover, benchmark, batch_size, flag_rev = True ,eps=1e-15))
-    return losses,cosine_accuracy
+                times_cos.append(time.time() - start_time)
+                
+    return losses,cosine_accuracy, times_cos
  
 #========== LSOT ==============#
 def train_LSOT(critic_f,critic_g,critic_f_optimizer,critic_g_optimizer,sampler_q,sampler_p,
                 benchmark,batch_size,n_iterations,epsilon):
     
     train_losses = []
+    times_cos = []
     cosine_accuracy = []
+    
+    start_time = time.time()
     for epoch_i in tqdm.tqdm(range(n_iterations)):
         
         q_sample    =   sampler_q.sample(batch_size) 
@@ -202,14 +219,18 @@ def train_LSOT(critic_f,critic_g,critic_f_optimizer,critic_g_optimizer,sampler_q
         
         if epoch_i % 10 == 0:
             cosine_accuracy.append(cosine_metrics( critic_f ,None,benchmark, batch_size ,flag_rev = False))
+            times_cos.append(time.time() - start_time)
         
-    return train_losses, cosine_accuracy
+    return train_losses, cosine_accuracy, times_cos
 
 #============WGAN-qp========#
 def train_WGAN_qp( critic, critic_optimizer,  sampler_q , sampler_p, benchmark, batch_size , n_iterations ):
     
     train_losses = []
     cosine_accuracy = []
+    times_cos = []
+    
+    start_time = time.time()
     for it in tqdm.tqdm(range(n_iterations)):
         
         samples_p = sampler_p.sample(batch_size,flag_plan = False) 
@@ -228,8 +249,9 @@ def train_WGAN_qp( critic, critic_optimizer,  sampler_q , sampler_p, benchmark, 
         
         if it % 10 == 0:
             cosine_accuracy.append(cosine_metrics( critic ,None,benchmark,  batch_size ,flag_rev = False))
-        
-    return train_losses, cosine_accuracy
+            times_cos.append(time.time() - start_time)
+            
+    return train_losses, cosine_accuracy, times_cos
 
 #=========get_grad========#
 def get_grad(mover, x):
@@ -250,7 +272,7 @@ def calculate_kantorovitch_wasserstein( critic , key , benchmark, batch_size):
 
 def L2_metrics(critic, mover_rev,  benchmark, batch_size, flag_rev):
 
-    mltp = -1. if isinstance(benchmark, MixToOneBenchmark) or  isinstance(benchmark, Celeba64Benchmark) else 1.
+    mltp = -1.  
     samples_p = benchmark.input_sampler.sample( batch_size, flag_plan = False) 
     samples_p.requires_grad = True # torch.Size([B,dim])
     grad_lip =  mltp*grad(benchmark.net , samples_p ) # torch.Size([B, dim])
@@ -264,7 +286,7 @@ def L2_metrics(critic, mover_rev,  benchmark, batch_size, flag_rev):
 
 def cosine_metrics(critic ,mover_rev, benchmark , batch_size, flag_rev ,eps = 1e-15):
     
-    mltp = -1. if isinstance(benchmark, MixToOneBenchmark) or  isinstance(benchmark, Celeba64Benchmark) else 1.
+    mltp = -1.  
     samples_p =  benchmark.input_sampler.sample( batch_size, flag_plan = False)
     samples_p.requires_grad = True
     grad_lip =  mltp*grad(benchmark.net , samples_p)
@@ -282,7 +304,7 @@ def cosine_metrics(critic ,mover_rev, benchmark , batch_size, flag_rev ,eps = 1e
     return (num/den).mean().item()
  
 def DOT_metrics(benchmark, batch_size, flag_plan=False):
-    mltp = -1. if isinstance(benchmark, MixToOneBenchmark) or  isinstance(benchmark, Celeba64Benchmark) else 1.
+    mltp = -1. 
     
     ot_emd = ot.da.EMDTransport(metric = 'euclidean')
     if flag_plan == True:
