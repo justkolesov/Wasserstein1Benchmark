@@ -57,7 +57,7 @@ The surfaces of the potential learned by the OT solvers in the 2-dimensional exp
 
 <p align="center"><img src="pics/nd/plot_surfaces.png" width="700" /></p>
 
-### Images Benchmark Pairs 
+### Celeba Images Benchmark Pairs 
 - `notebooks/get_benchmark_celeba.ipynb` -- previewing benchmark pairs;
 - `notebooks/test_celeba.ipynb` -- testing dual WGAN OT solvers.
 
@@ -72,6 +72,22 @@ The surfaces of the potential learned by the OT solvers in the 2-dimensional exp
   <img src="pics/celeba/pca_celeba_1.png" width="230" />  
   <img src="pics/celeba/pca_celeba_16.png" width="230" /> 
 </p>
+
+### CIFAR-10 Images Benchmark Pairs
+- `notebooks/get_benchmark_cifar.ipynb` -- previewing benchmark pairs;
+- `notebooks/test_cifar.ipynb` -- testing dual WGAN OT solvers.
+
+<p  align="center">
+  <img src= "pics/cifar/cifar_images_1.png" width="350" />
+  <img src="pics/celeba/cifar_images_16.png" width="350" /> 
+</p>
+
+<p  align="center">
+  <img src= "pics/cifar/pca_cifar.png" width="250" />
+  <img src="pics/cifar/pca_cifar_1.png" width="230" /> 
+  <img src="pics/cifar/pca_cifar_16.png" width="230" /> 
+</p>
+
  
 ## Credits
 - [CelebA page](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) with faces dataset;
