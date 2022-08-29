@@ -33,7 +33,7 @@ benchmark =  MixToOneBenchmark(16,64)
 # for number of funnels 16 (1,16), degree 10 (10, 100) correspondingly
 # benchmark = Celeba64Benchmark( 16, 10)
 
-# OR load the Celeba images benchmark pair
+# OR load the CIFAR-10 images benchmark pair
 # for number of funnels 16 (1,16), degree 10 (10, 100) correspondingly
 # benchmark = Cifar32Benchmark( 16, 10)
 
