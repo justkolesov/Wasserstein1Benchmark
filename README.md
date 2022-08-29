@@ -23,15 +23,19 @@ Our benchmark pairs of distributions are designed to be used to test how well OT
 import sys
 sys.path.append("..")
 
-from src.map_benchmark import MixToOneBenchmark, Celeba64Benchmark
+from src.map_benchmark import MixToOneBenchmark, Celeba64Benchmark, Cifar32Benchmark
 
 # Load the high-dimensional benchmark for dimension 16 (2, 4, ..., 128)
 #for number of funnels 64(4, 16, 64, 256)
 benchmark =  MixToOneBenchmark(16,64)
 
-# OR load the images benchmark pair 
+# OR load the Celeba images benchmark pair 
 # for number of funnels 16 (1,16), degree 10 (10, 100) correspondingly
 # benchmark = Celeba64Benchmark( 16, 10)
+
+# OR load the Celeba images benchmark pair
+# for number of funnels 16 (1,16), degree 10 (10, 100) correspondingly
+# benchmark = Cifar32Benchmark( 16, 10)
 
 # Sample 32 random points from the benchmark distributions (unpaired, for training)
 X = benchmark.input_sampler.sample(32)
@@ -91,6 +95,7 @@ The surfaces of the potential learned by the OT solvers in the 2-dimensional exp
  
 ## Credits
 - [CelebA page](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) with faces dataset;
+- [CIFAR-10 page](https://www.cs.toronto.edu/~kriz/cifar.html) with images dataset.
 - [UNet architecture](https://github.com/milesial/Pytorch-UNet) for the mover;
 - [ResNet architectures](https://github.com/harryliew/WGAN-QC) for the generator;
 - [DC-GAN architecture](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html) for the discriminator;
