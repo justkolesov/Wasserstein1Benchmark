@@ -79,7 +79,7 @@ The surfaces of the potential learned by the OT solvers in the 2-dimensional exp
 
 <p  align="center">
   <img src= "pics/cifar/cifar_images_1.png" width="350" />
-  <img src="pics/celeba/cifar_images_16.png" width="350" /> 
+  <img src="pics/cifar/cifar_images_16.png" width="350" /> 
 </p>
 
 <p  align="center">
