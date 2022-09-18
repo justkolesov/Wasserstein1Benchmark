@@ -1,5 +1,5 @@
 # Continuous Wasserstein-1 Benchmark
-This is the official `Python` implementation of the [NeurIPS 2022](https://nips.cc/) datasets and benchmarks track paper **Kantorovich Strikes Back! Wasserstein GANs are not Optimal Transport?** (paper on [openreview](https://openreview.net/forum?id=VtEEpi-dGlt)) by [Alexander Korotin](https://scholar.google.ru/citations?user=1rIIvjAAAAAJ&hl=en), [Alexander Kolesov](https://scholar.google.com/citations?user=vX2pmScAAAAJ&hl=ru&oi=ao)  and [Evgeny Burnaev](https://scholar.google.ru/citations?user=pCRdcOwAAAAJ&hl=ru).
+This is the official `Python` implementation of the [NeurIPS 2022](https://nips.cc/) (datasets and benchmarks track) paper **Kantorovich Strikes Back! Wasserstein GANs are not Optimal Transport?** (paper on [openreview](https://openreview.net/forum?id=VtEEpi-dGlt)) by [Alexander Korotin](https://scholar.google.ru/citations?user=1rIIvjAAAAAJ&hl=en), [Alexander Kolesov](https://scholar.google.com/citations?user=vX2pmScAAAAJ&hl=ru&oi=ao)  and [Evgeny Burnaev](https://scholar.google.ru/citations?user=pCRdcOwAAAAJ&hl=ru).
 
 The repository contains a set of continuous benchmark distributions for testing optimal transport (OT) solvers with the distance cost (the Wasserstein-1 distance, W1), the code for a dozen of WGAN dual OT solvers and their evaluation.
 
