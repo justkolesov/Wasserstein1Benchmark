@@ -3,6 +3,9 @@ This is the official `Python` implementation of the [NeurIPS 2022](https://nips.
 
 The repository contains a set of continuous benchmark distributions for testing optimal transport (OT) solvers with the distance cost (the Wasserstein-1 distance, W1), the code for a dozen of WGAN dual OT solvers and their evaluation.
 
+## Presentations
+- [Lightning talk](https://nips.cc/virtual/2022/poster/55712) by Alexander Kolesov at [NeurIPS 2022](https://nips.cc/Conferences/2022) (December 2022, EN);
+- [Talk](https://www.youtube.com/watch?v=V56kNdL6dpM) by Alexander Korotin at [AIRI](https://airi.net/) workshop (15 December 2022, RU);
  
 ## Pre-requisites
 The implementation is GPU-based. Single GPU GTX 1080 ti is enough to run each particular experiment. We tested the code with `torch==1.10.2`. The code might not run as intended in older/newer `torch` versions.
